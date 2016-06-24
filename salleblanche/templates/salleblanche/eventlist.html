@@ -1,0 +1,168 @@
+{% extends "salleblanche/base.html" %}
+{% load static %}
+{% block script %}
+<link href='http://fullcalendar.io/js/fullcalendar-2.6.1/fullcalendar.css' rel='stylesheet' />
+<link href='http://fullcalendar.io/js/fullcalendar-2.6.1/fullcalendar.print.css' rel='stylesheet' media='print' />
+<script src='http://fullcalendar.io/js/fullcalendar-2.6.1/fullcalendar.js'></script>
+
+<script>
+
+  $(function() { // document ready
+  
+///http://fullcalendar.io/docs/
+//get_object(),
+//get_event(),
+  $('#calendar').fullCalendar({
+    header: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'month,agendaWeek'
+    },
+    allDayText : 'Toute la journée',
+    allDaySlot : false,
+    timeFormat: 'HH:mm',
+    editable: true,
+    eventLimit: true, // allow "more" link when too many events
+    monthNames: ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet',
+                         'Août','Septembre','Octobre','Novembre','Décembre'],
+            monthNamesShort:
+            ['Janv.','Févr.','Mars','Avr.','Mai','Juin','Juil.','Août','Sept.','Oct.','Nov.','Déc.'],
+            dayNames: ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'],
+            dayNamesShort: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
+            axisFormat: 'H:mm',
+            
+            firstDay:1, // Lundi premier jour de la semaine
+            buttonText: {
+               
+                today:    'Aujourd\'hui',
+                month:    'Mois',
+                week:     'Semaine',
+                day:      'Jour'
+            },
+    events : { url : '/events.json' },
+    weekends : false,
+    eventClick: function(calEvent, jsEvent, view) {
+    document.location.href = '/event/'+ calEvent.id ;
+	},
+    dayClick: function(date, allDay, jsEvent, view) {
+	date = date.format("YYYY-MM-DD");//YYYY-MM-DD or DD-MM-YYYY
+	var obj_val =$('#id_numobj option:selected').val()
+	$.ajax({
+    	url: "{% url 'event_create'%}",
+	type:"GET",
+    	data: { date : date,
+		category : $('#id_category_obj option:selected').val(),
+		obj : obj_val,
+		csrfmiddlewaretoken:'{{csrf_token}}' }, 
+	success : function(result)
+		{
+			$('body').html(result);
+		}
+
+	})
+	
+    }
+
+  });
+
+	
+
+});
+function get_object(){
+	var oldselect = $('#id_numobj option:selected').val();  	
+	$.ajax({
+    		url: "{% url 'obj_request'%}",
+		type:"post",
+    		data: { category : $('#id_category_obj option:selected').val(),
+			csrfmiddlewaretoken:'{{csrf_token}}' }, 
+		success : function(data)
+			{	
+
+				var r ;
+				var selctobj = $('select[name=numobj]').text('');
+				$.each(data, function(key, value)
+				{
+					console.log(key,value)
+					r = selctobj.append('<option value="' + key + '">' + value +'</option>');
+				})
+				//get_event();
+			},
+		complete : function(data)
+			{
+				get_event();
+			}
+		})
+  	};
+function get_event(){
+	var obj_val =$('#id_numobj option:selected').val()
+	  	
+	$.ajax({
+    		url: "{% url 'evt_request'%}",
+		type:"post",
+    		data: { obj : obj_val,
+			csrfmiddlewaretoken:'{{csrf_token}}' }, //Data that we prepared previously,
+		complete : function()
+			{	
+				$('form').submit()
+			}
+		})
+
+  	}
+</script>
+<style type='text/css'>
+
+    body {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 14px;
+            font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+            }
+
+    #calendar, #formu {
+            width: 80%;
+            margin: 0 auto;
+            }
+
+</style>
+{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+{% if messages %}
+{% for msg in messages %}
+<div class="{{msg.level_tag}} callout" data-closable> {{msg.message}} 
+<button class="close-button" aria-label="" type="button" data-close>
+	<span aria-hidden="true">&times;</span>
+</button>
+</div>
+{% endfor %}
+{% endif %} 
+
+<div class = "row">
+
+<div class="medium-11 medium-centered large-11 large-centered columns">
+        <form action="" method="get">
+{% csrf_token %}
+        <div class = "row ">
+        <div class="medium-8 large-8 medium-centered large-centered columns">
+                <div class=" medium-6 large-6 columns "><label>{{ form.category_obj.label}}</label>{{ form.category_obj}}</div>
+                <div class=" medium-6 large-6 columns ">
+                    <label>
+                        {{ form.numobj.label}}
+                        <a href="#" onClick="window.open('/obj/'+$('#id_numobj option:selected').val())">
+                        voir
+                        </a>
+                     </label>{{ form.numobj}}
+                </div>
+            </div>
+        </div>
+        </form>
+
+        <div class="row" id='calendar'></div>
+        <div id='addEvent'></div>
+    </div>
+</div>
+
+{% endif %}
+{% endblock %}

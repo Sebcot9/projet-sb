@@ -1,0 +1,96 @@
+{% extends "salleblanche/base.html" %}
+{% block script %}
+<script> 
+
+function filt_object(){
+	var oldselect = $('#id_numobj option:selected').val();
+	$.ajax({
+    		url: "{% url 'obj_request'%}",
+		type:"post",
+    		data: { category : $('#id_category option:selected').val(),
+			csrfmiddlewaretoken:'{{csrf_token}}' }, //Data that we prepared previously,
+		success : function(data)
+			{
+
+				var r ;
+				var selctobj = $('select[name=numobject]').text('');
+				$.each(data, function(key, value)
+				{
+					console.log(key,value)
+					r = selctobj.append('<option value="' + key + '">' + value +'</option>');
+				})
+				//get_event();
+			}
+		})
+  	};
+
+  
+
+  
+</script>
+{% endblock %}
+
+{% if user.is_authenticated %}
+
+{% block content %}
+<div class = "row">
+    <div class="medium-9 medium-centered large-9 large-centered columns">
+<form method="post" action="{% url 'event_create' %}">
+{% csrf_token %}
+{% if form.errors %}
+	{% for field in form %}
+		{% for error in field.errors %}
+			<div class="callout alert radius">
+				{{ error|escape }}
+			</div>
+		{% endfor %}
+	{% endfor %}
+	{% for error in form.non_field_errors %}
+			<div class="callout alert radius">
+				{{ error|escape }}
+			</div>
+	{% endfor %}
+{% endif %}
+    <div class="row">
+	 <div hidden class="large-6 medium-6 small-4 columns"><label >{{form.numuser.label}} :</label> {{form.numuser}}</div>
+	</div>
+   <div class="row">
+        <div class="large-6 medium-6 small-4 columns"><label >{{form.category.label}} :</label> {{form.category}}</div>
+    </div>
+    <div class="row">
+        <div class="large-6 medium-6 small-4 columns">
+            <label >{{ form.numobject.label}} :
+                <a href="#" onClick="window.open('/obj/'+$('#id_numobject option:selected').val())">
+                    voir
+                </a>
+            </label>
+            {{ form.numobject}}
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="large-12 medium-12 small-9 columns"><label class="large-5 medium-5 small-2 columns" >{{ form.bookingdate.label}} :</label> {{ form.bookingdate}}</div>
+    </div>
+    <div class="row">
+        <div class="large-12 medium-12 small-9 columns"><label class="large-2 medium-2 small-2 columns">{{ form.fromtime.label }} </label> {{ form.fromtime}}</div>
+        <div class="large-12 medium-12 small-9 columns end"><label class="large-2 medium-2 small-2 columns">{{ form.totime.label }}  </label>{{ form.totime}}</div>
+    </div>
+    <div class="row">
+        <div class="large-4 medium-4 small-4 columns"><label >{{ form.numproj.label}} :</label> {{ form.numproj}}</div>
+    </div>
+    <div class="row">
+        <div class="large-9 medium-9 small-9 columns"><label>{{ form.comments.label}} :</label> {{ form.comments}}</div>
+    </div>
+    <div class="row">
+        <div class="large-9 medium-9 small-9 columns"><label>{{ form.participants.label}} :</label> {{ form.participants}}</div>
+    </div>
+<div class="row">
+        <input type="submit"/>
+</div>
+</form>
+        <div class="row"><a href="{% url 'event_list' %}" >Retour</a></div>
+    </div>
+
+</div>
+{% endblock %}
+{% endif %}

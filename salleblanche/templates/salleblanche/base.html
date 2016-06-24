@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <!-- Compressed CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/foundation/6.2.1/foundation.min.css">
+    <script src='//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js'></script>
+     <script src='//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+    <!-- Compressed JavaScript -->
+    <script src="https://cdn.jsdelivr.net/foundation/6.2.1/foundation.min.js"></script>
+    {% block script %}{% endblock %}
+   <title>{% block title %}Reservation{% endblock %}</title>
+</head>
+<body>
+<header>I.E.F</header>
+    <nav>
+        <div class="row">
+       {% block nav %}
+       <ul class="right">
+           <li><a href="{% url 'myevents' %}">Voir mes réservations</a></li>
+           <li><a href="{% url 'logout_user' %}">Vous déconnectez ?</a></li>
+       </ul>
+       {% endblock %}
+        </div>
+   </nav>
+   <section id="content">
+	
+       {% block content %}{% endblock %}
+   </section>
+<footer>&copy; I.E.F</footer>
+</body>
+</html>

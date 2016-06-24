@@ -1,0 +1,5 @@
+<form action="" method="post">{% csrf_token %}
+    <p>Voulez-vous supprimer votre réservation?</p>
+    <input type="submit" value="Confirm" />
+</form>
+<p><a href="{% url 'event_list' %}">Retour</a></p>

@@ -1,0 +1,17 @@
+{% extends "salleblanche/base.html" %}
+{% block content %}
+<div class ="table">
+<p><h2>L'objet reservé est : {{ object.name }} </h2> <a href="#" onClick="window.open('{% url 'read_obj' object.numobject %}')">voir</a> </p>
+ <p>Date de réservation : {{event.bookingdate}}</p>
+ <p>Commence de : {{event.fromtime}}</p>
+<p>Se termine : {{event.totime}}</p>
+{% if event.comments %}<p> Commentaires : {{event.comments}}</p>{% endif %}
+<p>Nombres de participants : {{event.participants}}</p>
+
+{% if event.numuser == user.numuser %}
+<p><a href="{% url 'update' event.numevent %}">Modifier</a></p>
+<p><a href="{% url 'delete' event.numevent %}">Supprimer</a></p>
+{% endif %}
+<p><a href="{% url 'event_list' %}">Retour</a></p>
+</div>
+{% endblock %}

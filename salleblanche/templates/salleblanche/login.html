@@ -1,0 +1,27 @@
+{% extends "salleblanche/base.html" %}
+{% block content %}
+
+{% if form.errors %}
+    <p class="error">Sorry, that's not a valid username or password</p>
+{% endif %}
+{% if user.is_authenticated %}
+	<p class="error">You're already logged in</p>
+{% else %}
+
+<form action ="{% url 'salleblanche.views.login_user' %}" method="post">
+{% csrf_token %}
+<div class="row">
+    <div class="large-8 medium-8 columns"><label for="username">User name:</label>
+    <input type="text" name="username" value="" id="username"></div>
+</div>
+<div class="row">    
+<div class="large-8 medium-8 columns"><label for="password">Password:</label>
+    <input type="password" name="password" value="" id="password"></div>
+</div>
+<div class="row">
+    <input type="submit" value="login" />	
+</div>
+</form>
+</div>
+{% endif %}
+{% endblock %}
